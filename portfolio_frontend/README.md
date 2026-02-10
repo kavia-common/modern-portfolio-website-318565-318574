@@ -1,82 +1,47 @@
-# Lightweight React Template for KAVIA
+# Professional Portfolio (React)
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+A clean, responsive, single-page portfolio built with React (no backend required).  
+Includes a sticky navbar and scrollable sections: **About**, **Skills**, **Projects** (with search + tech filter), and **Contact** (UI-only form with success toast).
 
-## Features
+## Run locally
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
-
-## Getting Started
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-### `npm test`
-
-Launches the test runner in interactive watch mode.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-## Customization
-
-### Colors
-
-The main brand colors are defined as CSS variables in `src/App.css`:
-
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
+```bash
+npm install
+npm start
 ```
 
-### Components
+Open http://localhost:3000
 
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
+## Customize content
 
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
+All profile + project content lives in:
 
-## Learn More
+- `src/portfolioData.js`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Update:
+- `profile` (name, title, bio, links)
+- `skills` (grouped lists)
+- `projects` (4–6 entries with tags, responsibilities, outcomes, links)
 
-### Code Splitting
+## Projects search & filter
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- Search matches: title, description, role, tags, responsibilities, outcomes
+- Filter buttons are generated automatically from project `tags`
 
-### Analyzing the Bundle Size
+## Contact form
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+The contact form is **UI-only** and does not submit to a backend by default.  
+On submit it shows a success toast and resets the form.
 
-### Making a Progressive Web App
+To wire later:
+- Replace the `onContactSubmit` handler in `src/App.js` to POST to your API endpoint.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Environment variables (optional)
 
-### Advanced Configuration
+This app is frontend-only; no env vars are required.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+If you choose to wire a backend later, Create React App supports env vars prefixed with `REACT_APP_`, e.g.:
 
-### Deployment
+- `REACT_APP_API_BASE=https://api.example.com`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+(Do not commit `.env`—use `.env.example` if needed.)
