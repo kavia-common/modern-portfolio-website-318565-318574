@@ -14,6 +14,9 @@ function App() {
   const [activeTag, setActiveTag] = useState("All");
   const { toasts, pushToast } = useToast();
 
+  // Theme: "light" | "dark"
+  const [theme, setTheme] = useState("light");
+
   const sectionIds = useMemo(() => ["about", "skills", "projects", "contact"], []);
 
   const refs = {
@@ -28,11 +31,41 @@ function App() {
     document.title = meta.siteTitle;
   }, []);
 
+  // Initialize theme from localStorage; fall back to OS preference.
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem("theme");
+      if (stored === "light" || stored === "dark") {
+        setTheme(stored);
+        return;
+      }
+    } catch {
+      // Ignore storage errors (privacy mode / blocked storage).
+    }
+
+    const prefersDark =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    setTheme(prefersDark ? "dark" : "light");
+  }, []);
+
+  // Apply theme to <html data-theme="..."> and persist.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute("data-theme", theme);
+
+    try {
+      window.localStorage.setItem("theme", theme);
+    } catch {
+      // Ignore storage errors.
+    }
+  }, [theme]);
+
   // Track active section as the user scrolls for nav highlighting.
   useEffect(() => {
-    const elements = sectionIds
-      .map((id) => refs[id]?.current)
-      .filter(Boolean);
+    const elements = sectionIds.map((id) => refs[id]?.current).filter(Boolean);
 
     if (elements.length === 0) return undefined;
 
@@ -65,14 +98,7 @@ function App() {
 
       if (!q) return true;
 
-      const haystack = [
-        p.title,
-        p.description,
-        p.role,
-        ...(p.tags || []),
-        ...(p.responsibilities || []),
-        ...(p.outcomes || [])
-      ]
+      const haystack = [p.title, p.description, p.role, ...(p.tags || []), ...(p.responsibilities || []), ...(p.outcomes || [])]
         .join(" ")
         .toLowerCase();
 
@@ -103,6 +129,11 @@ function App() {
     e.currentTarget.reset();
   };
 
+  // PUBLIC_INTERFACE
+  const toggleTheme = () => {
+    setTheme((t) => (t === "dark" ? "light" : "dark"));
+  };
+
   const IconLink = ({ href, label, children }) => (
     <a className="btn iconBtn" href={href} aria-label={label} target="_blank" rel="noreferrer">
       {children}
@@ -115,12 +146,28 @@ function App() {
     </svg>
   );
 
+  const ThemeIcon = () => {
+    // Keep icon simple and text-driven; both modes render nicely on either theme.
+    return (
+      <span className="themeToggleIcon" aria-hidden="true">
+        {theme === "dark" ? "☾" : "☀︎"}
+      </span>
+    );
+  };
+
   return (
     <div className="App">
       <nav className="navbar" aria-label="Primary">
         <div className="container">
           <div className="navInner">
-            <a className="brand" href="#about" onClick={(e) => { e.preventDefault(); scrollToSection("about"); }}>
+            <a
+              className="brand"
+              href="#about"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection("about");
+              }}
+            >
               <span className="brandMark" aria-hidden="true" />
               <span>{profile.name}</span>
             </a>
@@ -139,6 +186,17 @@ function App() {
                   {id === "about" ? "About" : id.charAt(0).toUpperCase() + id.slice(1)}
                 </a>
               ))}
+
+              <button
+                type="button"
+                className="themeToggle"
+                onClick={toggleTheme}
+                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+                title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+              >
+                <ThemeIcon />
+                <span>{theme === "dark" ? "Dark" : "Light"}</span>
+              </button>
             </div>
           </div>
         </div>
@@ -155,9 +213,7 @@ function App() {
                 <span>{profile.location}</span>
               </div>
 
-              <h1 className="heroTitle">
-                Building modern, dependable software—end to end.
-              </h1>
+              <h1 className="heroTitle">Building modern, dependable software—end to end.</h1>
 
               <p className="heroSubtitle">{profile.tagline}</p>
 
@@ -206,16 +262,14 @@ function App() {
           <div className="container">
             <h2 className="sectionTitle fadeInUp">About me</h2>
             <p className="sectionLead fadeInUp" style={{ animationDelay: "60ms" }}>
-              I enjoy collaborating with product and design to ship usable features, then iterating with metrics and feedback.
-              My recent work has focused on performance, quality, and developer experience.
+              I enjoy collaborating with product and design to ship usable features, then iterating with metrics and feedback. My recent work has
+              focused on performance, quality, and developer experience.
             </p>
 
             <div className="projectGrid" style={{ gridTemplateColumns: "1fr 1fr" }}>
               <div className="card cardPad fadeInUp" style={{ animationDelay: "100ms" }}>
                 <h3 className="cardTitle">What I’m best at</h3>
-                <p className="cardText">
-                  Building end-to-end features (UI → API → data), designing maintainable systems, and keeping UX fast and accessible.
-                </p>
+                <p className="cardText">Building end-to-end features (UI → API → data), designing maintainable systems, and keeping UX fast and accessible.</p>
                 <div className="chipRow" aria-label="Highlights">
                   <span className="badge">Performance</span>
                   <span className="badge">Accessibility</span>
@@ -252,7 +306,9 @@ function App() {
                   <h3 className="cardTitle">{group.group}</h3>
                   <div className="chipRow">
                     {group.items.map((s) => (
-                      <span className="badge" key={s}>{s}</span>
+                      <span className="badge" key={s}>
+                        {s}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -317,26 +373,38 @@ function App() {
 
                   <div className="chipRow" aria-label="Tech stack">
                     {(p.tags || []).map((t) => (
-                      <span className="badge" key={t}>{t}</span>
+                      <span className="badge" key={t}>
+                        {t}
+                      </span>
                     ))}
                   </div>
 
                   <div style={{ marginTop: 12 }}>
-                    <p className="cardText"><strong>Role:</strong> {p.role}</p>
+                    <p className="cardText">
+                      <strong>Role:</strong> {p.role}
+                    </p>
                     <div style={{ display: "grid", gap: 6, marginTop: 10 }}>
-                      <p className="cardText" style={{ margin: 0, fontWeight: 800 }}>Responsibilities</p>
+                      <p className="cardText" style={{ margin: 0, fontWeight: 800 }}>
+                        Responsibilities
+                      </p>
                       <ul style={{ margin: 0, paddingLeft: 18, color: "var(--muted)", fontSize: 14 }}>
                         {(p.responsibilities || []).map((r) => (
-                          <li key={r} style={{ marginBottom: 6 }}>{r}</li>
+                          <li key={r} style={{ marginBottom: 6 }}>
+                            {r}
+                          </li>
                         ))}
                       </ul>
                     </div>
 
                     <div style={{ display: "grid", gap: 6, marginTop: 12 }}>
-                      <p className="cardText" style={{ margin: 0, fontWeight: 800 }}>Outcomes</p>
+                      <p className="cardText" style={{ margin: 0, fontWeight: 800 }}>
+                        Outcomes
+                      </p>
                       <ul style={{ margin: 0, paddingLeft: 18, color: "var(--muted)", fontSize: 14 }}>
                         {(p.outcomes || []).map((o) => (
-                          <li key={o} style={{ marginBottom: 6 }}>{o}</li>
+                          <li key={o} style={{ marginBottom: 6 }}>
+                            {o}
+                          </li>
                         ))}
                       </ul>
                     </div>
@@ -349,7 +417,14 @@ function App() {
                   <h3 className="cardTitle">No matches</h3>
                   <p className="cardText">Try a different search term or clear the technology filter.</p>
                   <div className="heroActions">
-                    <button className="btn" type="button" onClick={() => { setQuery(""); setActiveTag("All"); }}>
+                    <button
+                      className="btn"
+                      type="button"
+                      onClick={() => {
+                        setQuery("");
+                        setActiveTag("All");
+                      }}
+                    >
                       Clear filters
                     </button>
                   </div>
@@ -386,8 +461,12 @@ function App() {
                 </div>
 
                 <div className="heroActions" style={{ marginTop: 14 }}>
-                  <button className="btn btnPrimary" type="submit">Send message</button>
-                  <a className="btn" href={`mailto:${profile.links.email}`}>Email instead</a>
+                  <button className="btn btnPrimary" type="submit">
+                    Send message
+                  </button>
+                  <a className="btn" href={`mailto:${profile.links.email}`}>
+                    Email instead
+                  </a>
                 </div>
 
                 <div className="helperText">
@@ -404,9 +483,15 @@ function App() {
           <div className="footerInner">
             <div>{meta.footerText}</div>
             <div className="socialRow" aria-label="Social links">
-              <a className="miniLink" href={profile.links.github} target="_blank" rel="noreferrer">GitHub</a>
-              <a className="miniLink" href={profile.links.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
-              <a className="miniLink" href={`mailto:${profile.links.email}`}>Email</a>
+              <a className="miniLink" href={profile.links.github} target="_blank" rel="noreferrer">
+                GitHub
+              </a>
+              <a className="miniLink" href={profile.links.linkedin} target="_blank" rel="noreferrer">
+                LinkedIn
+              </a>
+              <a className="miniLink" href={`mailto:${profile.links.email}`}>
+                Email
+              </a>
             </div>
           </div>
         </div>

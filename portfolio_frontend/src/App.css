@@ -32,7 +32,7 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(249, 250, 251, 0.75);
+  background: var(--navBg);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
 }
@@ -63,6 +63,35 @@
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+/* Theme toggle (light/dark) */
+.themeToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 12px;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.themeToggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 45px rgba(17, 24, 39, 0.10);
+}
+
+.themeToggle .themeToggleIcon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .navLink {
@@ -223,9 +252,9 @@
   gap: 8px;
   font-size: 12px;
   font-weight: 700;
-  color: rgba(17, 24, 39, 0.85);
+  color: var(--badgeText);
   border: 1px solid var(--border);
-  background: rgba(17, 24, 39, 0.02);
+  background: var(--badgeBg);
   padding: 6px 10px;
   border-radius: 999px;
 }
@@ -252,7 +281,7 @@
 }
 
 .input::placeholder {
-  color: rgba(100, 116, 139, 0.9);
+  color: var(--inputPlaceholder);
   font-weight: 600;
 }
 
@@ -270,7 +299,7 @@
   cursor: pointer;
   font-weight: 800;
   font-size: 12px;
-  color: rgba(17, 24, 39, 0.78);
+  color: var(--filterText);
   transition: background 160ms ease, transform 160ms ease, border-color 160ms ease;
 }
 
@@ -323,7 +352,7 @@
   gap: 8px;
   font-weight: 800;
   font-size: 12px;
-  color: rgba(17, 24, 39, 0.85);
+  color: var(--miniLinkText);
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 8px 10px;
